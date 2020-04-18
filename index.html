@@ -49,7 +49,7 @@
   <div class="card-deck mb-3 text-center">
     <div class="card mb-4 shadow-sm">
       <div class="card-header">
-        <h4 class="my-0 font-weight-normal">Free</h4>
+        <h4 class="my-0 font-weight-normal">Basic</h4>
       </div>
       <div class="card-body">
         <h1 class="card-title pricing-card-title">$0 <small class="text-muted">/ mo</small></h1>
@@ -59,7 +59,7 @@
           <li>Email support</li>
           <li>Help center access</li>
         </ul>
-        <button type="button" class="btn btn-lg btn-block btn-outline-primary">Sign up for free</button>
+        <button type="button" class="btn btn-lg btn-block btn-primary" data-plan='Basic' data-toggle="modal" data-target="#exampleModalCenter">Buy</button>
       </div>
     </div>
     <div class="card mb-4 shadow-sm">
@@ -74,7 +74,7 @@
           <li>Priority email support</li>
           <li>Help center access</li>
         </ul>
-        <button type="button" class="btn btn-lg btn-block btn-primary">Get started</button>
+        <button type="button" class="btn btn-lg btn-block btn-primary" data-plan='Pro' data-toggle="modal" data-target="#exampleModalCenter">Buy</button>
       </div>
     </div>
     <div class="card mb-4 shadow-sm">
@@ -89,16 +89,79 @@
           <li>Phone and email support</li>
           <li>Help center access</li>
         </ul>
-        <button type="button" class="btn btn-lg btn-block btn-primary">Contact us</button>
+        <button type="button" class="btn btn-lg btn-block btn-primary" data-plan='Enterprise' data-toggle="modal" data-target="#exampleModalCenter">Buy</button>
       </div>
     </div>
   </div>
+
+  <div id="error-message"></div>
 
   <div class="border-top pt-4 mt-5">
     <h2 class="font-weight-light">What will you get ?</h2>
     <p>List of fileds.</p>
   </div>
 
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">You selected the <span id="modal-plan-name" class="font-weight-bold text-primary"></span> plan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Please, enter the username of the account you want to target in the field below.</p>
+          <div class="input-group mb-3">
+            <input id="username" type="text" class="form-control" placeholder="username" aria-label="username" aria-describedby="basic-addon1">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" onClick='checkout()'>Validate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+<button id="checkout-button-sku_H7TcqSTOMwyLyE" role="link" data-plan='Basic' style="display:none;"></button>
+
+<!-- Load Stripe.js on your website. -->
+<script src="https://js.stripe.com/v3"></script>
+<script>
+(function() {
+  var stripe = Stripe('pk_test_sktPaL1ml154qj41msdlnj1x00yce0x4O7');
+
+  var checkoutButton = document.getElementById('checkout-button-sku_H7TcqSTOMwyLyE');
+  checkoutButton.addEventListener('click', function () {
+    // When the customer clicks on the button, redirect
+    // them to Checkout.
+    stripe.redirectToCheckout({
+      items: [{sku: 'sku_H7TcqSTOMwyLyE', quantity: 1}],
+      clientReferenceId: `username:${username};`,
+      // Do not rely on the redirect to the successUrl for fulfilling
+      // purchases, customers may not always reach the success_url after
+      // a successful payment.
+      // Instead use one of the strategies described in
+      // https://stripe.com/docs/payments/checkout/fulfillment
+      successUrl: 'https://insta-business-email-finder.github.io/success.html',
+      cancelUrl: 'https://insta-business-email-finder.github.io',
+    })
+    .then(function (result) {
+      if (result.error) {
+        // If `redirectToCheckout` fails due to a browser or network
+        // error, display the localized error message to your customer.
+        var displayError = document.getElementById('error-message');
+        displayError.textContent = result.error.message;
+      }
+    });
+  });
+})();
+</script>
+<script src="./bootstrap.min.js"></script>
+<script src="./main.js"></script>
 </body>
 </html>
